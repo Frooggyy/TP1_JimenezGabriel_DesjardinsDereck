@@ -26,21 +26,21 @@ async function Init_UI() {
         width: $("#sample").outerWidth(),
         height: $("#sample").outerHeight()
     };
-    pageManager = new PageManager('scrollPanel', 'itemsPanel', itemLayout, renderBookmarks);
+    pageManager = new PageManager('scrollPanel', 'itemsPanel', itemLayout, renderPosts);
     compileCategories();
     $('#createBookmark').on("click", async function () {
-        renderCreateBookmarkForm();
+        renderCreatePostForm();
     });
     $('#abort').on("click", async function () {
-        showBookmarks()
+        showPosts()
     });
     $('#aboutCmd').on("click", function () {
         renderAbout();
     });
-    showBookmarks();
+    showPostss();
     start_Periodic_Refresh();
 }
-function showBookmarks() {
+function showPosts() {
     $("#actionTitle").text("Liste des favoris");
     $("#scrollPanel").show();
     $('#abort').hide();
@@ -49,7 +49,7 @@ function showBookmarks() {
     $("#createBookmark").show();
     hold_Periodic_Refresh = false;
 }
-function hideBookmarks() {
+function hidePosts() {
     $("#scrollPanel").hide();
     $("#createBookmark").hide();
     $("#abort").show();
@@ -58,7 +58,7 @@ function hideBookmarks() {
 function start_Periodic_Refresh() {
     setInterval(async () => {
         if (!hold_Periodic_Refresh) {
-            let etag = await Bookmarks_API.HEAD();
+            let etag = await Posts_API.HEAD();
             if (currentETag != etag) {
                 currentETag = etag;
                 await pageManager.update(false);
@@ -69,7 +69,7 @@ function start_Periodic_Refresh() {
         periodicRefreshPeriod * 1000);
 }
 function renderAbout() {
-    hideBookmarks();
+    hidePosts();
     $("#actionTitle").text("À propos...");
     $("#aboutContainer").show();
 }
@@ -101,13 +101,13 @@ function updateDropDownMenu() {
         renderAbout();
     });
     $('#allCatCmd').on("click", function () {
-        showBookmarks();
+        showPosts();
         selectedCategory = "";
         updateDropDownMenu();
         pageManager.reset();
     });
     $('.category').on("click", function () {
-        showBookmarks();
+        showPosts();
         selectedCategory = $(this).text().trim();
         updateDropDownMenu();
         pageManager.reset();
@@ -115,8 +115,8 @@ function updateDropDownMenu() {
 }
 async function compileCategories() {
     categories = [];
-    let response = await Bookmarks_API.GetQuery("?fields=category&sort=category");
-    if (!Bookmarks_API.error) {
+    let response = await Posts_API.GetQuery("?fields=category&sort=category");
+    if (!Posts_API.error) {
         let items = response.data;
         if (items != null) {
             items.forEach(item => {
@@ -127,85 +127,83 @@ async function compileCategories() {
         }
     }
 }
-async function renderBookmarks(queryString) {
+async function renderPosts(queryString) {
     let endOfData = false;
     queryString += "&sort=category";
     if (selectedCategory != "") queryString += "&category=" + selectedCategory;
     addWaitingGif();
-    let response = await Bookmarks_API.Get(queryString);
-    if (!Bookmarks_API.error) {
+    let response = await Posts_API.Get(queryString);
+    if (!Posts_API.error) {
         currentETag = response.ETag;
-        let Bookmarks = response.data;
-        if (Bookmarks.length > 0) {
-            Bookmarks.forEach(Bookmark => {
-                $("#itemsPanel").append(renderBookmark(Bookmark));
+        let Posts = response.data;
+        if (Posts.length > 0) {
+            Posts.forEach(Post => {
+                $("#itemsPanel").append(renderPost(Post));
             });
             $(".editCmd").off();
             $(".editCmd").on("click", function () {
-                renderEditBookmarkForm($(this).attr("editBookmarkId"));
+                renderEditPostForm($(this).attr("editBookmarkId"));
             });
             $(".deleteCmd").off();
             $(".deleteCmd").on("click", function () {
-                renderDeleteBookmarkForm($(this).attr("deleteBookmarkId"));
+                renderDeletePostForm($(this).attr("deleteBookmarkId"));
             });
         } else
             endOfData = true;
     } else {
-        renderError(Bookmarks_API.currentHttpError);
+        renderError(Posts_API.currentHttpError);
     }
     removeWaitingGif();
     return endOfData;
 }
 
 function renderError(message) {
-    hideBookmarks();
+    hidePosts();
     $("#actionTitle").text("Erreur du serveur...");
     $("#errorContainer").show();
     $("#errorContainer").append($(`<div>${message}</div>`));
 }
-function renderCreateBookmarkForm() {
-    renderBookmarkForm();
+function renderCreatePostForm() {
+    renderPostForm();
 }
-async function renderEditBookmarkForm(id) {
+async function renderEditPostForm(id) {
     addWaitingGif();
-    let response = await Bookmarks_API.Get(id)
-    if (!Bookmarks_API.error) {
-        let Bookmark = response.data;
-        if (Bookmark !== null)
-            renderBookmarkForm(Bookmark);
+    let response = await Posts_API.Get(id)
+    if (!Posts_API.error) {
+        let Post = response.data;
+        if (Post !== null)
+            renderPostForm(Post);
         else
-            renderError("Bookmark introuvable!");
+            renderError("Post introuvable!");
     } else {
-        renderError(Bookmarks_API.currentHttpError);
+        renderError(Posts_API.currentHttpError);
     }
     removeWaitingGif();
 }
-async function renderDeleteBookmarkForm(id) {
-    hideBookmarks();
+async function renderDeletePostForm(id) {
+    hidePosts();
     $("#actionTitle").text("Retrait");
     $('#bookmarkForm').show();
     $('#bookmarkForm').empty();
-    let response = await Bookmarks_API.Get(id)
-    if (!Bookmarks_API.error) {
-        let Bookmark = response.data;
-        let favicon = makeFavicon(Bookmark.Url);
-        if (Bookmark !== null) {
+    let response = await Posts_API.Get(id)
+    if (!Posts_API.error) {
+        let Post = response.data;
+        if (Post !== null) {
             $("#bookmarkForm").append(`
         <div class="BookmarkdeleteForm">
             <h4>Effacer le favori suivant?</h4>
             <br>
-            <div class="BookmarkRow" id=${Bookmark.Id}">
+            <div class="BookmarkRow" id=${Post.Id}">
                 <div class="BookmarkContainer noselect">
                     <div class="BookmarkLayout">
                         <div class="Bookmark">
-                            <a href="${Bookmark.Url}" target="_blank"> ${favicon} </a>
-                            <span class="BookmarkTitle">${Bookmark.Title}</span>
+                            <span class="BookmarkTitle">${Post.Title}</span>
                         </div>
-                        <span class="BookmarkCategory">${Bookmark.Category}</span>
+                        <span class="BookmarkCategory">${Post.Category}</span>
                     </div>
                     <div class="BookmarkCommandPanel">
-                        <span class="editCmd cmdIcon fa fa-pencil" editBookmarkId="${Bookmark.Id}" title="Modifier ${Bookmark.Title}"></span>
-                        <span class="deleteCmd cmdIcon fa fa-trash" deleteBookmarkId="${Bookmark.Id}" title="Effacer ${Bookmark.Title}"></span>
+                        <span class="editCmd cmdIcon fa fa-pencil" editBookmarkId="${Post.Id}" title="Modifier ${Post.Title}"></span>
+                        <span class="deleteCmd cmdIcon fa fa-trash" deleteBookmarkId="${Post.Id}" title="Effacer ${Post.Title}"></span>
                     </div>
                 </div>
             </div>   
@@ -215,26 +213,26 @@ async function renderDeleteBookmarkForm(id) {
         </div>    
         `);
             $('#deleteBookmark').on("click", async function () {
-                await Bookmarks_API.Delete(Bookmark.Id);
-                if (!Bookmarks_API.error) {
-                    showBookmarks();
+                await Posts_API.Delete(Bookmark.Id);
+                if (!Posts_API.error) {
+                    showPosts();
                     await pageManager.update(false);
                     compileCategories();
                 }
                 else {
-                    console.log(Bookmarks_API.currentHttpError)
+                    console.log(Posts_API.currentHttpError)
                     renderError("Une erreur est survenue!");
                 }
             });
             $('#cancel').on("click", function () {
-                showBookmarks();
+                showPosts();
             });
 
         } else {
-            renderError("Bookmark introuvable!");
+            renderError("Post introuvable!");
         }
     } else
-        renderError(Bookmarks_API.currentHttpError);
+        renderError(Posts_API.currentHttpError);
 }
 function getFormData($form) {
     const removeTag = new RegExp("(<[a-zA-Z0-9]+>)|(</[a-zA-Z0-9]+>)", "g");
@@ -337,14 +335,12 @@ function makeFavicon(url, big = false) {
     url = "http://www.google.com/s2/favicons?sz=64&domain=" + url;
     return `<div class="${faviconClass}" style="background-image: url('${url}');"></div>`;
 }
-function renderBookmark(Bookmark) {
-    let favicon = makeFavicon(Bookmark.Url);
+function renderPost(Bookmark) {
     return $(`
      <div class="BookmarkRow" id='${Bookmark.Id}'>
         <div class="BookmarkContainer noselect">
             <div class="BookmarkLayout">
                 <div class="Bookmark">
-                    <a href="${Bookmark.Url}" target="_blank"> ${favicon} </a>
                     <span class="BookmarkTitle">${Bookmark.Title}</span>
                 </div>
                 <span class="BookmarkCategory">${Bookmark.Category}</span>
