@@ -1,10 +1,10 @@
-import PostModel from "../models/post";
-import Repository from "../models/repository";
-import Controller from "./Controller";
+import Post from "../models/post.js";
+import Repository from "../models/repository.js";
+import Controller from "./Controller.js";
 
 export default class PostController extends Controller{
     constructor(httpContext){
-        super(httpContext, new Repository(new PostModel()))
+        super(httpContext, new Repository(new Post()))
     }
 
     listArticles(){
