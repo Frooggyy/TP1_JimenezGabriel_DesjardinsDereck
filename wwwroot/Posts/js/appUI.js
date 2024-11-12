@@ -42,6 +42,8 @@ async function Init_UI() {
 }
 function showPosts() {
     $("#actionTitle").text("Liste des favoris");
+function showBookmarks() {
+    $("#actionTitle").text("Fil de nouvelles");
     $("#scrollPanel").show();
     $('#abort').hide();
     $('#bookmarkForm').hide();
