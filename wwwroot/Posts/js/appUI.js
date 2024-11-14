@@ -244,18 +244,24 @@ function getFormData($form) {
 }
 function newPost() {
     Post = {};
-    Post.Id = 0;
+    Post.Id = 10;
     Post.Title = "";
+    Post.Image="";
     Post.Text = "";
     Post.Category = "";
+    Post.Creation= 0;
     return Post;
 }
 function renderPostForm(Post = null) {
     hidePosts();
     let create = Post == null;
-    let favicon = `<div class="big-favicon"></div>`;
-    if (create)
+    if (create){
         Post = newPost();
+        Post.Image = "images/pendingImage.png"
+        Post.Creation = Date.now();
+    }
+        
+    
 
     $("#actionTitle").text(create ? "Création" : "Modification");
     $("#bookmarkForm").show();
@@ -263,6 +269,7 @@ function renderPostForm(Post = null) {
     $("#bookmarkForm").append(`
         <form class="form" id="BookmarkForm">
             <input type="hidden" name="Id" value="${Post.Id}"/>
+            <input type="hidden" name="Creation" value="${Post.Creation}"/>
 
             <label for="Title" class="form-label">Titre </label>
             <input 
@@ -284,6 +291,14 @@ function renderPostForm(Post = null) {
                 required
                 value="${Post.Text}" 
             />
+            <label class="form-label">Image </label>
+            <div   class='imageUploader' 
+                   newImage='${create}' 
+                   controlId='Image' 
+                   imageSrc='${Post.Image}' 
+                   waitingImage="Loading_icon.gif">
+            </div>
+            <br>
             <label for="Category" class="form-label">Catégorie </label>
             <input 
                 class="form-control"
@@ -298,10 +313,15 @@ function renderPostForm(Post = null) {
             <input type="button" value="Annuler" id="cancel" class="btn btn-secondary">
         </form>
     `);
+    
+    
     initFormValidation();
+    initImageUploaders();
     $('#BookmarkForm').on("submit", async function (event) {
         event.preventDefault();
         let Post = getFormData($("#BookmarkForm"));
+        
+        
         Post = await Posts_API.Save(Post, create);
         if (!Posts_API.error) {
             showPosts();

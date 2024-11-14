@@ -71,7 +71,7 @@ $(document).ready(() => {
 
 function initImageUploaders() {
     $('.imageUploader').each(function () {
-        console.log(this);
+        
         let id = $(this).attr('id');
         let controlId = $(this).attr('controlId');
         let waitingImage = $(this).attr('waitingImage');
