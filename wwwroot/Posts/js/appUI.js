@@ -28,7 +28,7 @@ async function Init_UI() {
     };
     pageManager = new PageManager('scrollPanel', 'itemsPanel', itemLayout, renderPosts);
     compileCategories();
-    $('#createBookmark').on("click", async function () {
+    $('#createPost').on("click", async function () {
         renderCreatePostForm();
     });
     $('#abort').on("click", async function () {
@@ -44,14 +44,14 @@ function showPosts() {
     $("#actionTitle").text("Fil de nouvelles");
     $("#scrollPanel").show();
     $('#abort').hide();
-    $('#bookmarkForm').hide();
+    $('#postForm').hide();
     $('#aboutContainer').hide();
-    $("#createBookmark").show();
+    $("#createPost").show();
     hold_Periodic_Refresh = false;
 }
 function hidePosts() {
     $("#scrollPanel").hide();
-    $("#createBookmark").hide();
+    $("#createPost").hide();
     $("#abort").show();
     hold_Periodic_Refresh = true;
 }
@@ -142,11 +142,11 @@ async function renderPosts(queryString) {
             });
             $(".editCmd").off();
             $(".editCmd").on("click", function () {
-                renderEditPostForm($(this).attr("editBookmarkId"));
+                renderEditPostForm($(this).attr("editPostId"));
             });
             $(".deleteCmd").off();
             $(".deleteCmd").on("click", function () {
-                renderDeletePostForm($(this).attr("deleteBookmarkId"));
+                renderDeletePostForm($(this).attr("deletePostId"));
             });
         } else
             endOfData = true;
@@ -183,37 +183,36 @@ async function renderEditPostForm(id) {
 async function renderDeletePostForm(id) {
     hidePosts();
     $("#actionTitle").text("Retrait");
-    $('#bookmarkForm').show();
-    $('#bookmarkForm').empty();
+    $('#postForm').show();
+    $('#postForm').empty();
     let response = await Posts_API.Get(id)
+    console.log(response);
     if (!Posts_API.error) {
         let Post = response.data;
         if (Post !== null) {
-            $("#bookmarkForm").append(`
-        <div class="BookmarkdeleteForm">
+            $("#postForm").append(`
+        <div class="PostdeleteForm">
             <h4>Effacer le favori suivant?</h4>
             <br>
-            <div class="BookmarkRow" id=${Post.Id}">
-                <div class="BookmarkContainer noselect">
-                    <div class="BookmarkLayout">
-                        <div class="Bookmark">
-                            <span class="BookmarkTitle">${Post.Title}</span>
+            <div class="PostRow" id=${Post.Id}">
+                <div class="PostContainer noselect">
+                    <div class="PostLayout">
+                        <div class="Post">
+                            <span class="PostTitle">${Post.Title}</span>
                         </div>
-                        <span class="BookmarkCategory">${Post.Category}</span>
+                        <span class="PostCategory">${Post.Category}</span>
                     </div>
-                    <div class="BookmarkCommandPanel">
-                        <span class="editCmd cmdIcon fa fa-pencil" editBookmarkId="${Post.Id}" title="Modifier ${Post.Title}"></span>
-                        <span class="deleteCmd cmdIcon fa fa-trash" deleteBookmarkId="${Post.Id}" title="Effacer ${Post.Title}"></span>
+                    <div class="PostCommandPanel">
                     </div>
                 </div>
             </div>   
             <br>
-            <input type="button" value="Effacer" id="deleteBookmark" class="btn btn-primary">
+            <input type="button" value="Effacer" id="deletePost" class="btn btn-primary">
             <input type="button" value="Annuler" id="cancel" class="btn btn-secondary">
         </div>    
         `);
-            $('#deleteBookmark').on("click", async function () {
-                await Posts_API.Delete(Bookmark.Id);
+            $('#deletePost').on("click", async function () {
+                await Posts_API.Delete(Post.Id);
                 if (!Posts_API.error) {
                     showPosts();
                     await pageManager.update(false);
@@ -258,16 +257,16 @@ function renderPostForm(Post = null) {
     if (create){
         Post = newPost();
         Post.Image = "images/pendingImage.png"
-        Post.Creation = Date.now();
     }
+    Post.Creation = Date.now();
         
     
 
     $("#actionTitle").text(create ? "Création" : "Modification");
-    $("#bookmarkForm").show();
-    $("#bookmarkForm").empty();
-    $("#bookmarkForm").append(`
-        <form class="form" id="BookmarkForm">
+    $("#postForm").show();
+    $("#postForm").empty();
+    $("#postForm").append(`
+        <form class="form" id="PostForm">
             <input type="hidden" name="Id" value="${Post.Id}"/>
             <input type="hidden" name="Creation" value="${Post.Creation}"/>
 
@@ -317,9 +316,9 @@ function renderPostForm(Post = null) {
     
     initFormValidation();
     initImageUploaders();
-    $('#BookmarkForm').on("submit", async function (event) {
+    $('#PostForm').on("submit", async function (event) {
         event.preventDefault();
-        let Post = getFormData($("#BookmarkForm"));
+        let Post = getFormData($("#PostForm"));
         
         
         Post = await Posts_API.Save(Post, create);
@@ -336,29 +335,19 @@ function renderPostForm(Post = null) {
         showPosts();
     });
 }
-function makeFavicon(url, big = false) {
-    // Utiliser l'API de google pour extraire le favicon du site pointé par url
-    // retourne un élément div comportant le favicon en tant qu'image de fond
-    ///////////////////////////////////////////////////////////////////////////
-    if (url.slice(-1) != "/") url += "/";
-    let faviconClass = "favicon";
-    if (big) faviconClass = "big-favicon";
-    url = "http://www.google.com/s2/favicons?sz=64&domain=" + url;
-    return `<div class="${faviconClass}" style="background-image: url('${url}');"></div>`;
-}
-function renderPost(Bookmark) {
+function renderPost(Post) {
     return $(`
-     <div class="BookmarkRow" id='${Bookmark.Id}'>
-        <div class="BookmarkContainer noselect">
-            <div class="BookmarkLayout">
-                <div class="Bookmark">
-                    <span class="BookmarkTitle">${Bookmark.Title}</span>
+     <div class="PostRow" id='${Post.Id}'>
+        <div class="PostContainer noselect">
+            <div class="PostLayout">
+                <div class="Post">
+                    <span class="PostTitle">${Post.Title}</span>
                 </div>
-                <span class="BookmarkCategory">${Bookmark.Category}</span>
+                <span class="PostCategory">${Post.Category}</span>
             </div>
-            <div class="BookmarkCommandPanel">
-                <span class="editCmd cmdIcon fa fa-pencil" editBookmarkId="${Bookmark.Id}" title="Modifier ${Bookmark.Title}"></span>
-                <span class="deleteCmd cmdIcon fa fa-trash" deleteBookmarkId="${Bookmark.Id}" title="Effacer ${Bookmark.Title}"></span>
+            <div class="PostCommandPanel">
+                <span class="editCmd cmdIcon fa fa-pencil" editPostId="${Post.Id}" title="Modifier ${Post.Title}"></span>
+                <span class="deleteCmd cmdIcon fa fa-trash" deletePostId="${Post.Id}" title="Effacer ${Post.Title}"></span>
             </div>
         </div>
     </div>           

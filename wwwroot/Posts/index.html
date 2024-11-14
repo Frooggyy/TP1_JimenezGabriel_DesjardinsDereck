@@ -21,7 +21,7 @@
         <div id="header">
             <img src="bookmark_logo.png" class="appLogo" alt="" title="Gestionnaire de favoris">
             <h4 id="actionTitle">Liste des favoris</h4>
-            <i class="cmdIcon fa fa-plus" id="createBookmark" title="Ajouter une nouvelle"></i>
+            <i class="cmdIcon fa fa-plus" id="createPost" title="Ajouter une nouvelle"></i>
             <i class="cmdIcon fa fa-times" id="abort" title="Annuler"></i>
             <div class="dropdown ms-auto" >
                 <div data-bs-toggle="dropdown" aria-expanded="false">
@@ -37,27 +37,27 @@
         <div id="content">
             <div id="scrollPanel">
                 <div id="itemsPanel">
-                    <div class="BookmarkRow" id="sample">
-                        <div class="BookmarkContainer noselect">
-                            <div class="BookmarkLayout">
-                                <div class="Bookmark">
+                    <div class="PostRow" id="sample">
+                        <div class="PostContainer noselect">
+                            <div class="PostLayout">
+                                <div class="Post">
                                     <a href="" target="_blank">sample </a>
-                                    <span class="BookmarkTitle">sample</span>
+                                    <span class="PostTitle">sample</span>
                                 </div>
-                                <span class="BookmarkCategory">sample Category</span>
+                                <span class="PostCategory">sample Category</span>
                             </div>
-                            <div class="BookmarkCommandPanel">
-                                <span class="editCmd cmdIcon fa fa-pencil" editBookmarkId="${Bookmark.Id}"
-                                    title="Modifier ${Bookmark.Title}"></span>
-                                <span class="deleteCmd cmdIcon fa fa-trash" deleteBookmarkId="${Bookmark.Id}"
-                                    title="Effacer ${Bookmark.Title}"></span>
+                            <div class="PostCommandPanel">
+                                <span class="editCmd cmdIcon fa fa-pencil" editPostId="${Post.Id}"
+                                    title="Modifier ${Post.Title}"></span>
+                                <span class="deleteCmd cmdIcon fa fa-trash" deletePostId="${Post.Id}"
+                                    title="Effacer ${Post.Title}"></span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div id="forms">
-                <div id="bookmarkForm"></div>
+                <div id="postForm"></div>
                 <div id="errorContainer" class="errorContainer"></div>
                 <div id="aboutContainer" class="aboutContainer">
                     <h2>Gestionnaire de favoris</h2>
