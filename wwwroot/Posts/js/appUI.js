@@ -42,6 +42,7 @@ async function Init_UI() {
 }
 function showPosts() {
     $("#actionTitle").text("Fil de nouvelles");Stashed changes
+    $("#actionTitle").text("Fil de nouvelles");
     $("#scrollPanel").show();
     $('#abort').hide();
     $('#bookmarkForm').hide();
