@@ -37,16 +37,11 @@ async function Init_UI() {
     $('#aboutCmd').on("click", function () {
         renderAbout();
     });
-    showPostss();
+    showPosts();
     start_Periodic_Refresh();
 }
-<<<<<<< Updated upstream
 function showPosts() {
-    $("#actionTitle").text("Liste des favoris");
-=======
-function showBookmarks() {
-    $("#actionTitle").text("Fil de nouvelles");
->>>>>>> Stashed changes
+    $("#actionTitle").text("Fil de nouvelles");Stashed changes
     $("#scrollPanel").show();
     $('#abort').hide();
     $('#bookmarkForm').hide();
