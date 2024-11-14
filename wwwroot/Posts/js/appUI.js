@@ -41,7 +41,6 @@ async function Init_UI() {
     start_Periodic_Refresh();
 }
 function showPosts() {
-    $("#actionTitle").text("Fil de nouvelles");Stashed changes
     $("#actionTitle").text("Fil de nouvelles");
     $("#scrollPanel").show();
     $('#abort').hide();
@@ -243,30 +242,27 @@ function getFormData($form) {
     });
     return jsonObject;
 }
-function newBookmark() {
-    Bookmark = {};
-    Bookmark.Id = 0;
-    Bookmark.Title = "";
-    Bookmark.Url = "";
-    Bookmark.Category = "";
-    return Bookmark;
+function newPost() {
+    Post = {};
+    Post.Id = 0;
+    Post.Title = "";
+    Post.Text = "";
+    Post.Category = "";
+    return Post;
 }
-function renderBookmarkForm(Bookmark = null) {
-    hideBookmarks();
-    let create = Bookmark == null;
+function renderPostForm(Post = null) {
+    hidePosts();
+    let create = Post == null;
     let favicon = `<div class="big-favicon"></div>`;
     if (create)
-        Bookmark = newBookmark();
-    else
-        favicon = makeFavicon(Bookmark.Url, true);
+        Post = newPost();
+
     $("#actionTitle").text(create ? "Création" : "Modification");
     $("#bookmarkForm").show();
     $("#bookmarkForm").empty();
     $("#bookmarkForm").append(`
         <form class="form" id="BookmarkForm">
-            <a href="${Bookmark.Url}" target="_blank" id="faviconLink" class="big-favicon" > ${favicon} </a>
-            <br>
-            <input type="hidden" name="Id" value="${Bookmark.Id}"/>
+            <input type="hidden" name="Id" value="${Post.Id}"/>
 
             <label for="Title" class="form-label">Titre </label>
             <input 
@@ -277,16 +273,16 @@ function renderBookmarkForm(Bookmark = null) {
                 required
                 RequireMessage="Veuillez entrer un titre"
                 InvalidMessage="Le titre comporte un caractère illégal"
-                value="${Bookmark.Title}"
+                value="${Post.Title}"
             />
-            <label for="Url" class="form-label">Url </label>
+            <label for="Text" class="form-label">Text </label>
             <input
-                class="form-control URL"
-                name="Url"
-                id="Url"
-                placeholder="Url"
+                class="form-control Text"
+                name="Text"
+                id="Text"
+                placeholder="Text"
                 required
-                value="${Bookmark.Url}" 
+                value="${Post.Text}" 
             />
             <label for="Category" class="form-label">Catégorie </label>
             <input 
@@ -295,35 +291,29 @@ function renderBookmarkForm(Bookmark = null) {
                 id="Category"
                 placeholder="Catégorie"
                 required
-                value="${Bookmark.Category}"
+                value="${Post.Category}"
             />
             <br>
-            <input type="submit" value="Enregistrer" id="saveBookmark" class="btn btn-primary">
+            <input type="submit" value="Enregistrer" id="savePost" class="btn btn-primary">
             <input type="button" value="Annuler" id="cancel" class="btn btn-secondary">
         </form>
     `);
     initFormValidation();
-    $("#Url").on("change", function () {
-        let favicon = makeFavicon($("#Url").val(), true);
-        $("#faviconLink").empty();
-        $("#faviconLink").attr("href", $("#Url").val());
-        $("#faviconLink").append(favicon);
-    })
     $('#BookmarkForm').on("submit", async function (event) {
         event.preventDefault();
-        let Bookmark = getFormData($("#BookmarkForm"));
-        Bookmark = await Bookmarks_API.Save(Bookmark, create);
-        if (!Bookmarks_API.error) {
-            showBookmarks();
+        let Post = getFormData($("#BookmarkForm"));
+        Post = await Posts_API.Save(Post, create);
+        if (!Posts_API.error) {
+            showPosts();
             await pageManager.update(false);
             compileCategories();
-            pageManager.scrollToElem(Bookmark.Id);
+            pageManager.scrollToElem(Post.Id);
         }
         else
             renderError("Une erreur est survenue!");
     });
     $('#cancel').on("click", function () {
-        showBookmarks();
+        showPosts();
     });
 }
 function makeFavicon(url, big = false) {
