@@ -336,20 +336,38 @@ function renderPostForm(Post = null) {
     });
 }
 function renderPost(Post) {
+    let date = formatDates(Post.Creation);
     return $(`
      <div class="PostRow" id='${Post.Id}'>
         <div class="PostContainer noselect">
             <div class="PostLayout">
-                <div class="Post">
+                <span class="PostCategory">${Post.Category}</span>
+                <div class="PostCommandPanel">
+                    <span class="editCmd cmdIcon fa fa-pencil" editPostId="${Post.Id}" title="Modifier ${Post.Title}"></span>
+                    <span class="deleteCmd cmdIcon fa fa-trash" deletePostId="${Post.Id}" title="Effacer ${Post.Title}"></span>
+                </div>
+            </div>
+            <div class="imageLayout">
+                <img class="PostImage" src="${Post.Image}"></img>
+            </div>
+            <div>${date.toUTCString()}</div>
+            <div>
+                <div class="PostTitleContainer">
                     <span class="PostTitle">${Post.Title}</span>
                 </div>
-                <span class="PostCategory">${Post.Category}</span>
             </div>
-            <div class="PostCommandPanel">
-                <span class="editCmd cmdIcon fa fa-pencil" editPostId="${Post.Id}" title="Modifier ${Post.Title}"></span>
-                <span class="deleteCmd cmdIcon fa fa-trash" deletePostId="${Post.Id}" title="Effacer ${Post.Title}"></span>
+            <div>
+                <div class="PostDetailsContainer">
+                    <span class="PostDetails">${Post.Text}</span>
+                </div>
             </div>
         </div>
     </div>           
     `);
+
+    function formatDates(epoch){
+        let date = new Date(epoch - 18020000);
+        date = date.split(":",1);
+        return date;
+    }
 }
