@@ -12,4 +12,15 @@ export default class PostController extends Controller{
             this.repository.getAll(this.HttpContext.path.params)
         )
     }
+    listArticlesFiltered(filter){
+        let repo = this.repository.getAll(this.HttpContext.path.params);
+        let filteredRepo =[];
+        for(var post in repo){
+            if(post.Title == filter || post.Text == filter || post.Category == filter){
+                filteredRepo.push(post);
+            }
+        }
+        this.HttpContext.JSON(filteredRepo);
+
+    }
 }

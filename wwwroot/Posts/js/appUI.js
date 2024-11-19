@@ -5,6 +5,7 @@ let currentETag = "";
 let hold_Periodic_Refresh = false;
 let pageManager;
 let itemLayout;
+let filtered = false;
 
 let waiting = null;
 let waitingGifTrigger = 2000;
@@ -22,16 +23,12 @@ function removeWaitingGif() {
 Init_UI();
 
 async function Init_UI() {
-    let filtered = false;
-    let wordFilter = "";
+    
     itemLayout = {
         width: $("#sample").outerWidth(),
         height: $("#sample").outerHeight()
     };
-    if(!filtered)
         pageManager = new PageManager('scrollPanel', 'itemsPanel', itemLayout, renderPosts);
-    else
-        pageManager = new PageManager('scrollPanel', 'itemsPanel', itemLayout, renderFilteredPosts);
     compileCategories();
     $('#search').on("click", function(){
         renderSearchBar();
@@ -45,9 +42,12 @@ async function Init_UI() {
     $('#aboutCmd').on("click", function () {
         renderAbout();
     });
-    $('#searchWords').on('click', function(){
-        wordFilter = $('#searchInput')[0].value;
+    $('#searchWords').on('click', async function(){
+        let wordFilter = $('#searchInput')[0].value;
+        sessionStorage.setItem("filter", wordFilter);
+        console.log(wordFilter);
         filtered = true;
+        renderPosts();
     })
     $('#searchBarContainer').hide();
 
@@ -157,60 +157,60 @@ async function compileCategories() {
         }
     }
 }
-async function renderPosts(queryString) {
+async function renderPosts(queryString ='') {
+    $("#itemsPanel").empty();
     let endOfData = false;
-    queryString += "&sort=category";
-    if (selectedCategory != "") queryString += "&category=" + selectedCategory;
-        addWaitingGif();
-    let response = await Posts_API.Get(queryString);
-    console.log(response);
-    if (!Posts_API.error) {
-        currentETag = response.ETag;
-        let Posts = response.data;
-        if (Posts.length > 0) {
-            Posts.forEach(Post => {
-                $("#itemsPanel").append(renderPost(Post));
-            });
-            $(".editCmd").off();
-            $(".editCmd").on("click", function () {
-                renderEditPostForm($(this).attr("editPostId"));
-            });
-            $(".deleteCmd").off();
-            $(".deleteCmd").on("click", function () {
-                renderDeletePostForm($(this).attr("deletePostId"));
-            });
-        } else
-            endOfData = true;
-    } else {
-        renderError(Posts_API.currentHttpError);
+    
+    if(queryString.includes('?')){
+        queryString += "&sort=category";
+    }else{
+        queryString+="?sort=category";
     }
-    removeWaitingGif();
-    return endOfData;
-}
-
-async function renderFilteredPosts(queryString) {
-    let endOfData = false;
-    queryString += "&sort=category";
+    console.log(queryString);
+    let filter= sessionStorage.getItem("filter");
+    
     if (selectedCategory != "") queryString += "&category=" + selectedCategory;
         addWaitingGif();
     let response = await Posts_API.Get(queryString);
-    console.log(response);
     if (!Posts_API.error) {
         currentETag = response.ETag;
         let Posts = response.data;
-        Posts = orderByDates(Posts);
         if (Posts.length > 0) {
-            Posts.forEach(Post => {
-                $("#itemsPanel").append(renderPost(Post));
-            });
-            $(".editCmd").off();
-            $(".editCmd").on("click", function () {
-                renderEditPostForm($(this).attr("editPostId"));
-            });
-            $(".deleteCmd").off();
-            $(".deleteCmd").on("click", function () {
-                renderDeletePostForm($(this).attr("deletePostId"));
-            });
+            if(filtered){
+                var filterStrings = [];                             //Taken from StackOverflow : https://stackoverflow.com/questions/48145432/javascript-includes-case-insensitive
+                var seperatedFilters = filter.split(" ");
+                seperatedFilters.forEach(word=>{
+                    filterStrings.push(word);
+                })
+                var regex = new RegExp(filterStrings.join( "|" ), "i");
+                Posts.forEach(Post=>{
+                    if(regex.test(Post.Text) || Post.Title.includes(filter)  || Post.Category.includes(filter) ){
+                        console.log(Post + "valid")
+                        $("#itemsPanel").append(renderPost(Post));
+                    }
+                });
+                $(".editCmd").off();
+                $(".editCmd").on("click", function () {
+                    renderEditPostForm($(this).attr("editPostId"));
+                });
+                $(".deleteCmd").off();
+                $(".deleteCmd").on("click", function () {
+                    renderDeletePostForm($(this).attr("deletePostId"))
+                });
+            }else{
+                Posts.forEach(Post => {
+                    $("#itemsPanel").append(renderPost(Post));
+                });
+                $(".editCmd").off();
+                $(".editCmd").on("click", function () {
+                    renderEditPostForm($(this).attr("editPostId"));
+                });
+                $(".deleteCmd").off();
+                $(".deleteCmd").on("click", function () {
+                    renderDeletePostForm($(this).attr("deletePostId"));
+                });
+            }
+            
         } else
             endOfData = true;
     } else {

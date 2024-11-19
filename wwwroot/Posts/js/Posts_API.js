@@ -38,6 +38,7 @@ class Posts_API {
     }
     static async GetQuery(queryString = "") {
         Posts_API.initHttpState();
+        console.log(queryString);
         return new Promise(resolve => {
             $.ajax({
                 url: this.API_URL() + queryString,
