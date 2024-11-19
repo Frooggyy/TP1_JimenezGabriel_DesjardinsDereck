@@ -72,9 +72,9 @@ class PageManager {
         let instance = this;
         this.scrollPanel.scroll(function () {
             if (!endOfData && (instance.scrollPanel.scrollTop() + instance.scrollPanel.outerHeight() >= instance.itemsPanel.outerHeight() - instance.itemLayout.height / 2)) {
-                instance.scrollPanel.off();
-                instance.currentPage.offset++;
-                instance.update(true);
+                // instance.scrollPanel.off();
+                // instance.currentPage.offset++;
+                // instance.update(true);
             }
             //console.log(`scroll`,instance.scrollPanel.scrollTop())
         });
