@@ -51,10 +51,7 @@
     border-radius: 9px;
     width: 100%;
     flex: 1;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-gutter: stable;
-    scroll-snap-type: y mandatory;
+
     background-color: white;
     padding-bottom: 8px;
 }
