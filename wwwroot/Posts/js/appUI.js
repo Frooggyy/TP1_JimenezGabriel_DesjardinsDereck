@@ -341,7 +341,7 @@ function renderPostForm(Post = null) {
 
             <label for="Title" class="form-label">Titre </label>
             <input 
-                class="form-control Alpha"
+                class="form-control"
                 name="Title" 
                 id="Title" 
                 placeholder="Titre"
@@ -352,7 +352,7 @@ function renderPostForm(Post = null) {
             />
             <label for="Text" class="form-label">Text </label>
             <input
-                class="form-control Text"
+                class="form-control"
                 name="Text"
                 id="Text"
                 placeholder="Text"
