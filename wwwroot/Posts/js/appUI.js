@@ -162,9 +162,9 @@ async function renderPosts(queryString ='') {
     let endOfData = false;
     
     if(queryString.includes('?')){
-        queryString += "&sort=category";
+        queryString += "&sort=Creation";
     }else{
-        queryString+="?sort=category";
+        queryString+="?sort=Creation";
     }
     console.log(queryString);
     let filter= sessionStorage.getItem("filter");
