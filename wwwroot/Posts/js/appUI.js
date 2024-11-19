@@ -22,12 +22,20 @@ function removeWaitingGif() {
 Init_UI();
 
 async function Init_UI() {
+    let filtered = false;
+    let wordFilter = "";
     itemLayout = {
         width: $("#sample").outerWidth(),
         height: $("#sample").outerHeight()
     };
-    pageManager = new PageManager('scrollPanel', 'itemsPanel', itemLayout, renderPosts);
+    if(!filtered)
+        pageManager = new PageManager('scrollPanel', 'itemsPanel', itemLayout, renderPosts);
+    else
+        pageManager = new PageManager('scrollPanel', 'itemsPanel', itemLayout, renderFilteredPosts);
     compileCategories();
+    $('#search').on("click", function(){
+        renderSearchBar();
+    })
     $('#createPost').on("click", async function () {
         renderCreatePostForm();
     });
@@ -37,8 +45,30 @@ async function Init_UI() {
     $('#aboutCmd').on("click", function () {
         renderAbout();
     });
-    showPosts();
+    $('#searchWords').on('click', function(){
+        wordFilter = $('#searchInput')[0].value;
+        filtered = true;
+    })
+    $('#searchBarContainer').hide();
+
+    
+        showPosts();
+    
     start_Periodic_Refresh();
+}
+function renderSearchBar(){
+    $('#searchBarContainer').show();
+    
+    $('#search')[0].className = "cmdIcon fa fa-times";
+    $('#search').on("click", function(){
+
+        $('#search')[0].className = "cmdIcon fa fa-magnifying-glass";
+        $('#search').on("click", function(){
+            renderSearchBar();
+        });
+        $('#searchBarContainer').hide();
+    });
+    
 }
 function showPosts() {
     $("#actionTitle").text("Fil de nouvelles");
@@ -131,8 +161,40 @@ async function renderPosts(queryString) {
     let endOfData = false;
     queryString += "&sort=category";
     if (selectedCategory != "") queryString += "&category=" + selectedCategory;
-    addWaitingGif();
+        addWaitingGif();
     let response = await Posts_API.Get(queryString);
+    console.log(response);
+    if (!Posts_API.error) {
+        currentETag = response.ETag;
+        let Posts = response.data;
+        if (Posts.length > 0) {
+            Posts.forEach(Post => {
+                $("#itemsPanel").append(renderPost(Post));
+            });
+            $(".editCmd").off();
+            $(".editCmd").on("click", function () {
+                renderEditPostForm($(this).attr("editPostId"));
+            });
+            $(".deleteCmd").off();
+            $(".deleteCmd").on("click", function () {
+                renderDeletePostForm($(this).attr("deletePostId"));
+            });
+        } else
+            endOfData = true;
+    } else {
+        renderError(Posts_API.currentHttpError);
+    }
+    removeWaitingGif();
+    return endOfData;
+}
+
+async function renderFilteredPosts(queryString) {
+    let endOfData = false;
+    queryString += "&sort=category";
+    if (selectedCategory != "") queryString += "&category=" + selectedCategory;
+        addWaitingGif();
+    let response = await Posts_API.Get(queryString);
+    console.log(response);
     if (!Posts_API.error) {
         currentETag = response.ETag;
         let Posts = response.data;
@@ -367,7 +429,8 @@ function renderPost(Post) {
 
     function formatDates(epoch){
         let date = new Date(epoch - 18020000);
-        date = date.split(":",1);
+        console.log(date);
+        // date = date..split(":",1);
         return date;
     }
 }
