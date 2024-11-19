@@ -25,7 +25,7 @@
     },
     {
         "Id": "bd8e0950-a60e-11ef-b9e3-afb2c6fdbb13",
-        "Creation": 1731976710352,
+        "Creation": 1731983134809,
         "Title": "Alain Saulnier infatigable défenseur du journalisme",
         "Text": "La Fédération professionnelle des journalistes du Québec (FPJQ) a rendu hommage le week-end dernier à l’un de ses anciens présidents les plus marquants, Alain Saulnier. Le legs de celui qui fut également directeur de l’information à Radio-Canada est colossal. C’est sous son impulsion qu’a entre autres été créée l’émission Enquête, à l’origine de nombreux reportages qui auront marqué le Québec.",
         "Image": "bd8e0951-a60e-11ef-b9e3-afb2c6fdbb13.webp",
@@ -33,7 +33,7 @@
     },
     {
         "Id": "e4427bd0-a60e-11ef-b9e3-afb2c6fdbb13",
-        "Creation": 1731976799470,
+        "Creation": 1731983109925,
         "Title": "Laure Prouvost réseaux de significations",
         "Text": "La Fondation, le Centre et le Studio Phi ont depuis longtemps Venise dans leur mire, y présentant entre autres des oeuvres en réalité virtuelle. Phi reprend aussi périodiquement des oeuvres ou des artistes ayant été exposés dans la célèbre biennale sise dans la lagune vénète. Cette année, nous avons pu y voir Feeling Her Way, de Sonia Boyce, expo présentée en 2022 à Venise dans le pavillon de la Grande-Bretagne. Citons aussi They Come to Us Without a Word, de l’Américaine Joan Jonas, à Venise en 2015 et chez Phi en 2016, ou The Enclave, oeuvre immersive de l’artiste Richard Mosse, qui a occupé le pavillon de l’Irlande lors de la 55e édition de la Biennale de Venise, en 2013, et qui fut montrée à Montréal en 2014… Il faut dire que le Musée d’art contemporain a longtemps procédé de la même manière, en reprenant des créations ou des artistes récemment à l’affiche dans la Sérénissime.",
         "Image": "e4427bd1-a60e-11ef-b9e3-afb2c6fdbb13.webp",
@@ -41,18 +41,10 @@
     },
     {
         "Id": "4ef5ef50-a611-11ef-b9e3-afb2c6fdbb13",
-        "Creation": 1731977927744,
+        "Creation": 1731983129875,
         "Title": "allo",
         "Text": "allo",
         "Image": "4ef61660-a611-11ef-b9e3-afb2c6fdbb13.png",
         "Category": "allo"
-    },
-    {
-        "Id": "12b989f0-a618-11ef-845d-4971a8d119bf",
-        "Title": "Best",
-        "Text": "Test",
-        "Category": "Test",
-        "Image": "http://localhost:5000/assetsRepository/",
-        "Creation": 1111
     }
 ]
