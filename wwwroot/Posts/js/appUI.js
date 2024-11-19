@@ -175,6 +175,7 @@ async function renderPosts(queryString ='') {
     if (!Posts_API.error) {
         currentETag = response.ETag;
         let Posts = response.data;
+        Posts.reverse();
         if (Posts.length > 0) {
             if(filtered){
                 var filterStrings = [];                             //Taken from StackOverflow : https://stackoverflow.com/questions/48145432/javascript-includes-case-insensitive
@@ -387,7 +388,6 @@ function renderPostForm(Post = null) {
     $('#PostForm').on("submit", async function (event) {
         event.preventDefault();
         let Post = getFormData($("#PostForm"));
-        
         
         Post = await Posts_API.Save(Post, create);
         if (!Posts_API.error) {
