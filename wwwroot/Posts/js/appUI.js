@@ -136,6 +136,7 @@ async function renderPosts(queryString) {
     if (!Posts_API.error) {
         currentETag = response.ETag;
         let Posts = response.data;
+        Posts = orderByDates(Posts);
         if (Posts.length > 0) {
             Posts.forEach(Post => {
                 $("#itemsPanel").append(renderPost(Post));
@@ -155,6 +156,11 @@ async function renderPosts(queryString) {
     }
     removeWaitingGif();
     return endOfData;
+}
+
+function orderByDates(Posts){
+    Posts = Posts.sort((a,b)=> a.Creation - b.Creation);
+    return Posts.reverse();
 }
 
 function renderError(message) {
@@ -336,7 +342,7 @@ function renderPostForm(Post = null) {
     });
 }
 function renderPost(Post) {
-    let date = formatDates(Post.Creation);
+    let date = convertToFrenchDate(Post.Creation);
     return $(`
      <div class="PostRow" id='${Post.Id}'>
         <div class="PostContainer noselect">
@@ -350,7 +356,7 @@ function renderPost(Post) {
             <div class="imageLayout">
                 <img class="PostImage" src="${Post.Image}"></img>
             </div>
-            <div>${date.toUTCString()}</div>
+            <div class="date">${date}</div>
             <div>
                 <div class="PostTitleContainer">
                     <span class="PostTitle">${Post.Title}</span>
@@ -365,9 +371,21 @@ function renderPost(Post) {
     </div>           
     `);
 
-    function formatDates(epoch){
-        let date = new Date(epoch - 18020000);
-        date = date.split(":",1);
-        return date;
+    function convertToFrenchDate(numeric_date) {
+        let date = new Date(numeric_date);
+        var options = { year: 'numeric', month: 'long', day: 'numeric' };
+        var opt_weekday = { weekday: 'long' };
+        var weekday = toTitleCase(date.toLocaleDateString("fr-FR", opt_weekday));
+    
+        function toTitleCase(str) {
+            return str.replace(
+                /\w\S*/g,
+                function (txt) {
+                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                }
+            );
+        }
+        return weekday + " le " + date.toLocaleDateString("fr-FR", options) + " @ " + date.toLocaleTimeString("fr-FR");
     }
+
 }
